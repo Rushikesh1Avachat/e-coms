@@ -1,18 +1,15 @@
 import { createClient } from "next-sanity";
 
-const projectId = process.env.SANITY_PROJECT_ID!;
-const dataset = process.env.SANITY_DATASET!;
-const apiVersion = process.env.SANITY_API_VERSION || "2024-01-01";
-const token = process.env.SANITY_API_TOKEN!;
+export function getBackendClient() {
+  if (!process.env.SANITY_API_TOKEN) {
+    throw new Error("SANITY_API_TOKEN is missing");
+  }
 
-if (!projectId || !dataset || !token) {
-  throw new Error("Missing Sanity environment variables");
+  return createClient({
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+    apiVersion: "2024-01-01",
+    useCdn: false, // ✅ ALWAYS false for writes
+    token: process.env.SANITY_API_TOKEN,
+  });
 }
-
-export const backendClient = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  useCdn: false, // ❗ REQUIRED for mutations
-  token,         // ❗ REQUIRED for create / patch
-});
